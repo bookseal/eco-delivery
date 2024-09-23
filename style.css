@@ -1,0 +1,171 @@
+				body {
+					font-family: 'Poppins', sans-serif;
+					background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				}
+
+				.container {
+					backdrop-filter: blur(10px);
+					background-color: rgba(255, 255, 255, 0.8);
+				}
+
+				/* Fade-in animation */
+				.fade-in {
+					opacity: 0;
+					animation: fadeIn 1s ease-in-out forwards;
+				}
+
+				@keyframes fadeIn {
+					0% {
+							opacity: 0;
+							transform: translateY(10px);
+					}
+					100% {
+							opacity: 1;
+							transform: translateY(0);
+					}
+				}
+
+				/* Pop-in animation */
+				.pop-in {
+					animation: popIn 0.5s cubic-bezier(0.26, 0.53, 0.74, 1.48);
+				}
+
+				@keyframes popIn {
+					0% {
+							transform: scale(0.8);
+							opacity: 0;
+					}
+					100% {
+							transform: scale(1);
+							opacity: 1;
+					}
+				}
+
+				/* Flow-up animation for food cards */
+				.flow-up {
+					animation: flowUp 0.5s ease-out forwards;
+				}
+
+				@keyframes flowUp {
+					from {
+							transform: translateY(20px);
+							opacity: 0;
+					}
+					to {
+							transform: translateY(0);
+							opacity: 1;
+					}
+				}
+
+				/* Highlight the CO2 saved information */
+				.highlight-co2 {
+					color: #34D399; /* Tailwind green-400 */
+					font-weight: bold;
+					font-size: 1.5em;
+					display: inline-block;
+					animation: co2Pop 1s ease-in-out forwards;
+				}
+
+				/* Animation for emphasizing the CO2 saved */
+				@keyframes co2Pop {
+					0% {
+							transform: scale(0.8);
+							opacity: 0;
+					}
+					50% {
+							transform: scale(1.1);
+							opacity: 0.8;
+					}
+					100% {
+							transform: scale(1);
+							opacity: 1;
+					}
+				}
+
+				/* Sparkle effect for decoration */
+				.sparkle {
+					position: absolute;
+					width: 5px;
+					height: 5px;
+					border-radius: 50%;
+					background-color: white;
+					opacity: 0;
+				}
+
+				.sparkle-container {
+					position: relative;
+					overflow: hidden;
+				}
+
+				/* Food cards with hover effect */
+				.food-list {
+					max-height: 400px;
+					overflow-y: auto;
+				}
+
+				.food-card {
+					transition: all 0.3s ease;
+				}
+
+				.food-card:hover {
+					transform: translateY(-5px);
+					box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+				}
+
+				/* First food card styling */
+				.first-item {
+					background-color: #eef2ff;
+					border: 2px solid #4f46e5;
+				}
+
+				/* Typing effect and cursor */
+				.typing {
+					border-right: 2px solid black;
+					animation: blink 0.7s steps(1) infinite;
+				}
+
+				@keyframes blink {
+					from {
+							border-color: black;
+					}
+					to {
+							border-color: transparent;
+					}
+				}
+
+				/* Highlight numbers for calories burned */
+				.highlight-number {
+					color: #4f46e5; /* Indigo */
+					font-weight: bold;
+					font-size: 1.2em;
+				}
+
+				/* Animated text appearance */
+				.animated-text {
+					animation: scaleUp 0.5s ease forwards;
+				}
+
+				@keyframes scaleUp {
+					0% {
+							transform: scale(0.9);
+							opacity: 0;
+					}
+					100% {
+							transform: scale(1);
+							opacity: 1;
+					}
+				}
+
+				/* Visual emphasis for calorie count and numbers */
+				.text-3xl {
+					font-size: 2rem;
+					font-weight: bold;
+				}
+
+				/* Overall styling for the card presentation */
+				.card-container {
+					margin-bottom: 1.5rem;
+					padding: 1rem;
+					background-color: #f8fafc;
+					border-radius: 0.5rem;
+				}
