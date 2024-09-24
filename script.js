@@ -56,7 +56,7 @@ function animateLeaves(leafCount) {
             const imageIndex = currentLeaf % maxUniqueLeaves;
             const paddedIndex = imageIndex.toString().padStart(2, '0');
             const leafImg = document.createElement('img');
-            leafImg.src = `/profile/leaves/${paddedIndex}.png`;
+            leafImg.src = `/leaves/${paddedIndex}.png`;
             leafImg.alt = "Leaf";
             leafImg.className = "inline-block w-12 h-12 mr-2 mb-2 opacity-0 transition-opacity duration-500";
             leafContainer.appendChild(leafImg);
