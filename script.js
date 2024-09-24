@@ -52,15 +52,12 @@ function generateResultSectionHTML(distance, co2Equivalents) {
 }
 
 function generateTreeAbsorptionHTML(totalAbsorptionTime, remainingTime) {
-	// Calculate the percentage for the remaining time progress bar
 	const remainingPercentage = (remainingTime / totalAbsorptionTime) * 100;
 
 	return `
 				<div class="tree-absorption-section mb-6 fade-in-slide-up">
 						<h3 class="text-green-600 font-bold text-xl mb-2">Tree Absorption Impact:</h3>
-						<p>Total time saved for tree absorption: <strong>${totalAbsorptionTime.toFixed(2)} hours</strong></p>
-					
-							
+						<p>Total time saved for tree absorption: <strong>${totalAbsorptionTime.toFixed(0)} hours</strong></p>
 						</div>
 				</div>
 		`;
