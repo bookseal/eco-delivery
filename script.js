@@ -1,4 +1,3 @@
-// Import the CO2-related functions
 import { calculateCO2Equivalents, updateTreeAbsorptionTime, getTotalTreeAbsorptionTime, getRemainingTreeAbsorptionTime } from './co2Calculations.js';
 
 function setVariables() {
@@ -11,31 +10,6 @@ function setVariables() {
 function suggestFoods(caloriesBurned) {
 	return foodOptions.filter(food => food.calories <= caloriesBurned)
 		.sort((a, b) => b.calories - a.calories);
-}
-
-// Modify the existing startAbsorptionCountdown function
-function startAbsorptionCountdown(remainingTime, totalAbsorptionTime) {
-	const countdownElement = document.getElementById('absorption-countdown');
-	if (!countdownElement) return;
-
-	function updateCountdown() {
-		const hours = Math.floor(remainingTime);
-		const minutes = Math.floor((remainingTime - hours) * 60);
-		const seconds = Math.floor(((remainingTime - hours) * 60 - minutes) * 60);
-
-		countdownElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
-		updateRemainingProgressBar(remainingTime, totalAbsorptionTime);
-
-		if (remainingTime > 0) {
-			remainingTime -= 1 / 3600; // Decrease by 1 second in hours
-			setTimeout(updateCountdown, 1000);
-		} else {
-			countdownElement.textContent = "Completed!";
-			updateRemainingProgressBar(0, totalAbsorptionTime);
-		}
-	}
-
-	updateCountdown();
 }
 
 function generateResultHTML(distance, co2Equivalents, caloriesBurned, suggestedFoods, totalAbsorptionTime, remainingTime) {
@@ -85,9 +59,8 @@ function generateTreeAbsorptionHTML(totalAbsorptionTime, remainingTime) {
 				<div class="tree-absorption-section mb-6 fade-in-slide-up">
 						<h3 class="text-green-600 font-bold text-xl mb-2">Tree Absorption Impact:</h3>
 						<p>Total time saved for tree absorption: <strong>${totalAbsorptionTime.toFixed(2)} hours</strong></p>
-						<p>Remaining absorption time: <span id="absorption-countdown" class="font-bold">${remainingTime.toFixed(2)} hours</span></p>
-						<div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
-								<div id="remaining-progress" class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div>
+					
+							
 						</div>
 				</div>
 		`;
@@ -134,21 +107,12 @@ function generateFoodCardHTML(food, index) {
 	`;
 }
 
-// The resetAbsorptionTime function and event listener remain the same
 function resetAbsorptionTime() {
 	localStorage.removeItem('totalTreeAbsorptionTime');
 	localStorage.removeItem('lastUpdateTime');
 	alert('Absorption time has been reset!');
 	location.reload(); // Reload the page to reflect the changes
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-	document.body.addEventListener('click', (event) => {
-		if (event.target && event.target.id === 'resetButton') {
-			resetAbsorptionTime();
-		}
-	});
-});
 
 function calculateAndSuggest() {
 	console.log("Starting calculateAndSuggest function");
@@ -161,60 +125,96 @@ function calculateAndSuggest() {
 	}
 
 	const caloriesBurned = calculateCaloriesBurned(distance);
-	console.log("Calories burned:", caloriesBurned);
-
 	const co2Equivalents = calculateCO2Equivalents(distance);
-	console.log("CO2 Equivalents:", co2Equivalents);
-
 	const suggestedFoods = suggestFoods(caloriesBurned);
-	console.log("Suggested foods:", suggestedFoods);
-
-	// New functions for tree absorption calculations
 	updateTreeAbsorptionTime(co2Equivalents.hoursOfTreeAbsorption);
 	const totalAbsorptionTime = getTotalTreeAbsorptionTime();
-	console.log("Total absorption time:", totalAbsorptionTime);
-
 	const remainingTime = getRemainingTreeAbsorptionTime();
-	console.log("Remaining time:", remainingTime);
 
-	console.log("About to call generateResultHTML");
 	try {
 		const resultHTML = generateResultHTML(distance, co2Equivalents, caloriesBurned, suggestedFoods, totalAbsorptionTime, remainingTime);
-		console.log("Generated result HTML");
 		resultDiv.innerHTML = resultHTML;
-
-		// Start the countdown timer for remaining absorption time
-		startAbsorptionCountdown(remainingTime, totalAbsorptionTime);
+		showInitialStatus();
 	} catch (error) {
 		console.error("Error in generateResultHTML:", error);
 	}
-	createSparkles(resultDiv, 30);
+}
 
-	// Start the countdown timer for remaining absorption time
-	startAbsorptionCountdown(remainingTime);
-	console.log("Finished calculateAndSuggest function");
+function displayRemainingAbsorptionTime(remainingTime, totalAbsorptionTime) {
+		const progressPercentage = (remainingTime / totalAbsorptionTime) * 100;
+
+		return `
+				<div class="p-4 bg-gradient-to-r from-purple-400 to-blue-500 text-white rounded-lg shadow-lg text-center">
+						<h2 class="text-2xl font-bold mb-2">Tree Absorption Countdown</h2>
+						<div class="flex justify-center items-center mb-4">
+								<svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+								</svg>
+								<span class="text-4xl font-extrabold" id="time-display">${formatTime(remainingTime)}</span>
+						</div>
+						<p class="mb-4 text-lg">Remaining CO2 absorption time</p>
+						<div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+								<div id="progress-bar" class="bg-green-400 h-2.5 rounded-full" style="width: ${progressPercentage}%"></div>
+						</div>
+				</div>
+		`;
+}
+
+function formatTime(timeInHours) {
+		const totalSeconds = Math.floor(timeInHours * 3600);
+		const days = Math.floor(totalSeconds / (3600 * 24));
+		const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+		const minutes = Math.floor((totalSeconds % 3600) / 60);
+		const seconds = totalSeconds % 60;
+
+		let formattedTime = '';
+		if (days > 0) formattedTime += `${days}d `;
+		if (hours > 0 || days > 0) formattedTime += `${hours}h `;
+		if (minutes > 0 || hours > 0 || days > 0) formattedTime += `${minutes}m `;
+		formattedTime += `${seconds}s`;
+
+		return formattedTime.trim();
 }
 
 function showInitialStatus() {
-	const initialStatusDiv = document.getElementById('initialStatus');
-	const totalAbsorptionTime = getTotalTreeAbsorptionTime();
-	const remainingTime = getRemainingTreeAbsorptionTime();
+		const initialStatusDiv = document.getElementById('initialStatus');
+		const totalAbsorptionTime = getTotalTreeAbsorptionTime();
+		const remainingTime = getRemainingTreeAbsorptionTime();
 
-	if (totalAbsorptionTime > 0) {
-			initialStatusDiv.innerHTML = `
-					<h3 class="text-green-600 font-bold text-xl mb-2">Your Tree Status:</h3>
-					<p>Total absorption time: <strong>${totalAbsorptionTime.toFixed(2)} hours</strong></p>
-					<p>Remaining absorption time: <strong id="initial-countdown">${remainingTime.toFixed(2)} hours</strong></p>
-					<div class="w-full bg-gray-200 rounded-full h-2.5 mt-2 mb-4 dark:bg-gray-700">
-							<div id="initial-progress" class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div>
-					</div>
-			`;
-			startAbsorptionCountdown(remainingTime, totalAbsorptionTime, 'initial-countdown', 'initial-progress');
-	} else {
-			initialStatusDiv.innerHTML = `
-					<p class="text-green-600 font-bold">Welcome! Start cycling to become a virtual tree and absorb CO2!</p>
-			`;
-	}
+		if (totalAbsorptionTime > 0) {
+				initialStatusDiv.innerHTML = displayRemainingAbsorptionTime(remainingTime, totalAbsorptionTime);
+				startAbsorptionCountdown(remainingTime, totalAbsorptionTime, 'time-display', 'progress-bar');
+		} else {
+				initialStatusDiv.innerHTML = `
+						<p class="text-green-600 font-bold">Welcome! Start cycling to become a virtual tree and absorb CO2!</p>
+				`;
+		}
+}
+
+function startAbsorptionCountdown(remainingTime, totalAbsorptionTime, timeElementId, progressElementId) {
+		const timeElement = document.getElementById(timeElementId);
+		const progressElement = document.getElementById(progressElementId);
+
+		// Check if timeElement exists to avoid null reference errors
+		if (!timeElement || !progressElement) {
+				console.error(`Element with ID ${timeElementId} or ${progressElementId} not found.`);
+				return;
+		}
+
+		const countdownInterval = setInterval(() => {
+				if (remainingTime <= 0) {
+						clearInterval(countdownInterval);
+						timeElement.innerText = "00:00:00";
+						progressElement.style.width = '0%';
+				} else {
+						remainingTime -= 1 / 3600; // Decrease time by 1 second
+						timeElement.innerText = formatTime(remainingTime);
+
+						// Update progress bar
+						const progressPercentage = (remainingTime / totalAbsorptionTime) * 100;
+						progressElement.style.width = `${progressPercentage}%`;
+				}
+		}, 1000); // Update every second
 }
 
 // Add event listener for the Enter key
@@ -241,3 +241,11 @@ document.getElementById('distance').addEventListener('keypress', function(event)
 document.getElementById('calculateButton').addEventListener('click', calculateAndSuggest);
 
 document.addEventListener('DOMContentLoaded', showInitialStatus);
+
+document.addEventListener('DOMContentLoaded', () => {
+	document.body.addEventListener('click', (event) => {
+		if (event.target && event.target.id === 'resetButton') {
+			resetAbsorptionTime();
+		}
+	});
+});
